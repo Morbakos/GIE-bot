@@ -10,28 +10,38 @@ bot.on('ready', function() {
     bot.user.setActivity('le GIE', {type: 'WATCHING'});
 });
 
-bot.on('message', content => {
+bot.on('message', message => {
 
-    var cmd = content.content.split(' ')[0];
+    if (message.author.bot || message.channel != bot.channels.cache.get('715923475474153484')) {
+        return;
+    }
 
+    var begin = message.content.substring(0,1);
+    if(begin != '!'){
+        return;
+    }
+
+    var cmd = message.content.split(' ')[0];
     switch (cmd) {
-        case '%modset':
-            modset(content);
+        case '!modset':
+            modset(message);
             break;
 
-        case '%mm':
-            missionMaking(content);
+        case '!mm':
+            missionMaking(message);
             break;        
 
-        case '%serveur':
-            serveur(content);
+        case '!serveur':
+            serveur(message);
             break;
 
-        case '%changelog':
-            changelog(content);
+        case '!changelog':
+            message.delete({timeout: 0});
+            changelog(message);
             break;
 
         default:
+            message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
             break;
     }
 });
@@ -57,19 +67,19 @@ function changelog(content) {
             },
             {
                 name: ':large_orange_diamond: Mise à jour',
-                value: "- RHS AFRF\n- RHS USAF\n"
+                value: "- RHS AFRF\n- RHS USAF\n- RHS GREF\n- RHS SAF\n- Terrorist Organization Black Order\n- USS Nimitz\n- CBA\n- ACE COMPAT RHS AFRF\n- ACE COMPAT RHS USAF\n- ACE COMPAT RHS GREF\n- ACE COMPAT CUP Terrain\n- ACE COMPAT black order\n- CUP Terrain maps\n- CUP Terrain core\n- 3den Enhanced\n- Achilles\n- MCC\n- Enhanced Soundscape\n- JSRS + compat RHS"
             },
             {
                 name: ':no_entry_sign: Suppression',
-                value: "- SMA (adios :slight_smile:)\n-VSM (parce qu'on a mieux :yum:)"
+                value: "- SMA (adios :slight_smile:)\n- VSM (parce qu'on a mieux :yum:)\n- FEMAL3 Uniform\n- ACE Compat VSM\n- Gemini (parce qu'on joue plus la mission qui en a besoin)"
             },
             {
                 name: ':white_circle: Inchangés',
                 value: "- 7.Event\n- 8.Interco"
             },
             {
-                name: 'Un soucis ?',
-                value: "N'hésites pas à demander de l'aide dans les channels appropriés, les membres et les staffs t'aideront du mieux qu'ils le peuvent :yum:"
+                name: ':warning: **ATTENTION** :warning:',
+                value: "Si possible, il est conseillé de garder l'ancien modpack sous la main pour le moment. Cette MaJ étant assez importante, des problèmes peuvent survenir. Garder une copie de l'ancien modpack vous évitera de devoir tout retélécharger si le besoin se présente."
             }
         ],
         timestamp: new Date(),
@@ -79,7 +89,7 @@ function changelog(content) {
         },
     };
     
-    // content.channel.send("@everyone");
+    content.channel.send("@everyone");
     content.channel.send({ embed: embedReponse });
     
 }
