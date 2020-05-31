@@ -35,10 +35,10 @@ bot.on('message', message => {
             serveur(message);
             break;
 
-        case '!changelog':
-            message.delete({timeout: 0});
-            changelog(message);
-            break;
+        // case '!changelog':
+        //     message.delete({timeout: 0});
+        //     changelog(message);
+        //     break;
 
         default:
             message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
@@ -50,7 +50,7 @@ function changelog(content) {
 
     const embedReponse = {
         color: 0xEB4034,
-        title: 'Mise à jour du modset GIE :slight_smile:',
+        title: 'Mise à jour du modset GIE prenant effet immédiatement :slight_smile:',
         url: 'https://sites.google.com/view/mmgie/accueil',
         author: {
             name: 'GIE',
@@ -76,6 +76,10 @@ function changelog(content) {
             {
                 name: ':white_circle: Inchangés',
                 value: "- 7.Event\n- 8.Interco"
+            },
+            {
+                name: 'Poids',
+                value: "La mise à jour fait environ 30 Go"
             },
             {
                 name: ':warning: **ATTENTION** :warning:',
