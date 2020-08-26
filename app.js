@@ -12,7 +12,7 @@ bot.on('ready', function() {
 
 bot.on('message', message => {
 
-    if (message.author.bot || message.channel != bot.channels.cache.get('715923475474153484')) {
+    if (message.author.bot) {
         return;
     }
 
@@ -21,30 +21,114 @@ bot.on('message', message => {
         return;
     }
 
-    var cmd = message.content.split(' ')[0];
+    var cmd = message.content.split(' ')[0].substring(1);
     switch (cmd) {
-        case '!modset':
+        case 'modset':
             modset(message);
             break;
 
-        case '!mm':
+        case 'mm':
             missionMaking(message);
             break;        
 
-        case '!serveur':
+        case 'serveur':
             serveur(message);
             break;
 
-        // case '!changelog':
+        // case 'changelog':
         //     message.delete({timeout: 0});
         //     changelog(message);
         //     break;
+
+        case 'mission':
+            message.delete({ timeout: 1 });
+            mission(message);
+            break;
 
         default:
             message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
             break;
     }
 });
+
+function mission(message) {
+
+    // Split message 
+    var content = message.content.substring(("!mission ".length)).split(',');
+
+    if (content.length != 6) {
+        message.author.send('Il manque des informations pour la mission, la commande est la suivante:\n`!mission nomDeLaMission, nombreDeJoueurs, typeDeMort, camo, stuffIntegre, lienGDoc`');
+        return;
+    }
+
+    var elem = {
+        nom: content[0].trim(),
+        nbJoueurs: content[1].trim(),
+        typeMort: content[2].trim(),
+        camo: content[3].trim(),
+        stuffIntegre: content[4].trim(),
+        doc: content[5].trim()
+    };
+    var description = `Salut @everyone! Voici les infos sur les infos sur la prochaine mission :slight_smile:`
+
+    const embedReponse = {
+        color: 0xEB4034,
+        title: 'Mission',
+        url: elem.doc,
+        author: {
+            name: 'GIE',
+            icon_url: bot.user.avatarURL(),
+            url: 'https://gie.polygames.net',
+        },
+        description: description,
+        thumbnail: {
+            url: bot.user.avatarURL(),
+        },
+        fields: [
+            {
+                name: 'Nom',
+                value: elem.nom ,
+                inline: true
+            },
+            {
+                name: 'Nombre de joueurs',
+                value: elem.nbJoueurs ,
+                inline: true
+            },
+            {
+                name: 'Type de mort',
+                value: elem.typeMort ,
+                inline: true
+            },
+            {
+                name: 'Camouflage',
+                value: elem.camo ,
+                inline: true
+            },
+            {
+                name: 'Stuff intégré',
+                value: elem.stuffIntegre,
+                inline: true
+            },
+            {
+                name: 'GDoc',
+                value: "[Lien GDoc]("+ elem.doc +")",
+                inline: true
+            },
+            {
+                name: 'Un soucis ?',
+                value: "N'hésites pas à demander de l'aide dans les channels appropriés, les membres et les staffs t'aideront du mieux qu'ils le peuvent :yum:"
+            }
+        ],
+        timestamp: new Date(),
+        footer: {
+            text: 'GIE-Staff by Morbakos',
+            icon_url: bot.user.avatarURL(),
+        },
+    };    
+    message.channel.send('@everyone');
+    message.channel.send({ embed: embedReponse });
+}
 
 function changelog(content) {
 
