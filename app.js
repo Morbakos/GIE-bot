@@ -7,7 +7,7 @@ bot.login(TOKEN);
 
 bot.on('ready', function() {
     console.log(`Connecté en tant que ${bot.user.tag}`);
-    bot.user.setActivity('le GIE', {type: 'WATCHING'});
+    bot.user.setActivity('le GIE || #help', {type: 'WATCHING'});
 });
 
 bot.on('message', message => {
@@ -17,7 +17,7 @@ bot.on('message', message => {
     }
 
     var begin = message.content.substring(0,1);
-    if(begin != '!'){
+    if(begin != process.env.PREFIX){
         return;
     }
 
@@ -35,15 +35,20 @@ bot.on('message', message => {
             serveur(message);
             break;
 
-        // case 'changelog':
-        //     message.delete({timeout: 0});
-        //     changelog(message);
-        //     break;
+        /*case 'changelog':
+             message.delete({timeout: 0});
+             changelog(message);
+             break;*/
 
         case 'mission':
             message.delete({ timeout: 1 });
             mission(message);
             break;
+
+        case 'help':
+        	message.delete({ timeout:1 });
+        	help(message);
+        	break;
 
         default:
             message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
@@ -51,13 +56,58 @@ bot.on('message', message => {
     }
 });
 
+function help (message) {
+
+	var description = `Salut ${message.author.username}! Voici les infos sur les commandes disponibles :slight_smile:`
+
+    const embedReponse = {
+        color: 0xEB4034,
+        title: 'Commandes de GIE-staff',
+        url: 'https://gie.polygames.net/',
+        author: {
+            name: 'GIE',
+            icon_url: bot.user.avatarURL(),
+            url: 'https://gie.polygames.net',
+        },
+        description: description,
+        thumbnail: {
+            url: bot.user.avatarURL(),
+        },
+        fields: [
+            {
+                name: '#modset',
+                value: "Toutes les infos concernant le modset du GIE"
+            },
+            {
+                name: "#mm",
+                value: "Un mini site made by Pipper pour apprendre à faire des missions"
+            },
+            {
+                name: "#serveur",
+                value: "Les infos sur nos serveurs"
+            },
+            {
+                name: "#mission",
+                value: "Annoncer la prochaine mission"
+            }
+        ],
+        timestamp: new Date(),
+        footer: {
+            text: 'GIE-Staff by Morbakos',
+            icon_url: bot.user.avatarURL(),
+        },
+    };
+    
+    message.channel.send({ embed: embedReponse });
+};
+
 function mission(message) {
 
     // Split message 
-    var content = message.content.substring(("!mission ".length)).split(',');
+    var content = message.content.substring(("#mission ".length)).split(',');
 
     if (content.length != 6) {
-        message.author.send('Il manque des informations pour la mission, la commande est la suivante:\n`!mission nomDeLaMission, nombreDeJoueurs, typeDeMort, camo, stuffIntegre, lienGDoc`');
+        message.author.send('Il manque des informations pour la mission, la commande est la suivante:\n`#mission nomDeLaMission, nombreDeJoueurs, typeDeMort, camo, stuffIntegre, lienGDoc`');
         return;
     }
 
@@ -69,7 +119,7 @@ function mission(message) {
         stuffIntegre: content[4].trim(),
         doc: content[5].trim()
     };
-    var description = `Salut @everyone! Voici les infos sur les infos sur la prochaine mission :slight_smile:`
+    var description = `Salut @everyone! Voici les infos sur la prochaine mission :slight_smile:`
 
     const embedReponse = {
         color: 0xEB4034,
@@ -112,7 +162,7 @@ function mission(message) {
             },
             {
                 name: 'GDoc',
-                value: "[Lien GDoc]("+ elem.doc +")",
+                value: "["+ elem.nom +"]("+ elem.doc +")",
                 inline: true
             },
             {
@@ -146,28 +196,24 @@ function changelog(content) {
         },
         fields: [
             {
-                name: ':white_check_mark: Ajout',
-                value: "- Project Opfor"
-            },
-            {
                 name: ':large_orange_diamond: Mise à jour',
-                value: "- RHS AFRF\n- RHS USAF\n- RHS GREF\n- RHS SAF\n- Terrorist Organization Black Order\n- USS Nimitz\n- CBA\n- ACE COMPAT RHS AFRF\n- ACE COMPAT RHS USAF\n- ACE COMPAT RHS GREF\n- ACE COMPAT CUP Terrain\n- ACE COMPAT black order\n- CUP Terrain maps\n- CUP Terrain core\n- 3den Enhanced\n- Achilles\n- MCC\n- Enhanced Soundscape\n- JSRS + compat RHS"
+                value: "La quasi totalité de nos mods ont été mis à jours, la liste serait trop longue pour les citer. Cependant, dans les mods notable, nous avons @ace (qui est maintenant avec la version refaite du médical)"
             },
             {
                 name: ':no_entry_sign: Suppression',
-                value: "- SMA (adios :slight_smile:)\n- VSM (parce qu'on a mieux :yum:)\n- FEMAL3 Uniform\n- ACE Compat VSM\n- Gemini (parce qu'on joue plus la mission qui en a besoin)"
+                value: "- ADV - Splint\n- ADV - CPR"
             },
             {
                 name: ':white_circle: Inchangés',
-                value: "- 7.Event\n- 8.Interco"
+                value: "- 7.Event\n- 8.Interco\n- 9. Test"
             },
             {
                 name: 'Poids',
-                value: "La mise à jour fait environ 30 Go"
+                value: "La mise à jour fait environ 38 Go"
             },
             {
                 name: ':warning: **ATTENTION** :warning:',
-                value: "Si possible, il est conseillé de garder l'ancien modpack sous la main pour le moment. Cette MaJ étant assez importante, des problèmes peuvent survenir. Garder une copie de l'ancien modpack vous évitera de devoir tout retélécharger si le besoin se présente."
+                value: "La totalité des mods ayant été renommés afin d'améliorer le suivis, vous avez 2 options:\n- 1) Tout retélécharger\n- 2) Renommer les mods à l'identiques que sur ArmASync, de manière à n'avoir que les fichiers modifiés à télécharger."
             }
         ],
         timestamp: new Date(),
