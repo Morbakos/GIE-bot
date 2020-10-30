@@ -16,7 +16,7 @@ bot.on('message', message => {
         return;
     }
 
-    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name === "Staff"))) {
+    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name === "Admin"))) {
         message.delete({ timeout:1 });
         message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
         console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
