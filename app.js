@@ -2,6 +2,9 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 const TOKEN = process.env.TOKEN;
+// const NOM_MISSION = /\[GIE\]\[(\d+|\d+\-\d+)\]\w+\[\w+\]-\[(MR|MD)\]\-v\d+.+/gm; // GIE-NBJOUEURSMAX-Nom_mission-MM-MR-vX.map
+const NOM_MISSION = /GIE-\d+-\w+-\w+-(MR|MD)-v\d\..+\.pbo/mi
+const dl = require('./download');
 
 bot.login(TOKEN);
 
@@ -16,7 +19,26 @@ bot.on('message', message => {
         return;
     }
 
-    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name === "Admin"))) {
+    /** DEV */
+    if (message.channel.id == process.env.CHANNEL_TEST && message.author.username == "Morbakos") {
+
+        if(NOM_MISSION.exec(message.attachments.first().name)){
+            // console.log(message.attachments.first());
+            console.log("Regex OK");
+            
+            var missionName = message.attachments.first().name.split('-');
+            missionName = missionName[2] + '-' + missionName[5].split('.')[0];
+            if (!dl.download(message.attachments.first().url, missionName)) {
+                message.author.send(`Bonjour ${message.author.username}. Il y a eu une erreur lors du téléchargement de ta mission. merci de réessayer.`);
+            }
+
+        } else {
+            console.log("Regex pas ok");
+        }
+        return;
+    }
+
+    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name.toLowerCase() === "admin"))) {
         message.delete({ timeout:1 });
         message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
         console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
