@@ -8,9 +8,9 @@ const dl = require('./download');
 
 bot.login(TOKEN);
 
-bot.on('ready', function() {
+bot.on('ready', function () {
     console.log(`Connecté en tant que ${bot.user.tag}`);
-    bot.user.setActivity('le GIE || #help', {type: 'WATCHING'});
+    bot.user.setActivity('le GIE || #help', { type: 'WATCHING' });
 });
 
 bot.on('message', message => {
@@ -22,10 +22,10 @@ bot.on('message', message => {
     /** DEV */
     if (message.channel.id == process.env.CHANNEL_TEST && message.author.username == "Morbakos") {
 
-        if(NOM_MISSION.exec(message.attachments.first().name)){
+        if (NOM_MISSION.exec(message.attachments.first().name)) {
             // console.log(message.attachments.first());
             console.log("Regex OK");
-            
+
             var missionName = message.attachments.first().name.split('-');
             missionName = missionName[2] + '-' + missionName[5].split('.')[0];
             if (!dl.download(message.attachments.first().url, missionName)) {
@@ -38,56 +38,58 @@ bot.on('message', message => {
         return;
     }
 
-    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name.toLowerCase() === "admin"))) {
-        message.delete({ timeout:1 });
-        message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
-        console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
-        return; 
-    }
-
-    var begin = message.content.substring(0,1);
-    if(begin != process.env.PREFIX){
-        return;
-    }
-
-    var cmd = message.content.split(' ')[0].substring(1);
-    switch (cmd) {
-        case 'modset':
-            modset(message);
-            break;
-
-        case 'mm':
-            missionMaking(message);
-            break;        
-
-        case 'serveur':
-            serveur(message);
-            break;
-
-        /*case 'changelog':
-             message.delete({timeout: 0});
-             changelog(message);
-             break;*/
-
-        case 'mission':
+    if (message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !(message.member.roles.cache.some(role => role.name.toLowerCase() === "admin"))) {
+        if (message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !(message.member.roles.cache.some(role => role.name === "admin"))) {
             message.delete({ timeout: 1 });
-            mission(message);
-            break;
+            message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
+            console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
+            return;
+        }
 
-        case 'help':
-        	message.delete({ timeout:1 });
-        	help(message);
-        	break;
+        var begin = message.content.substring(0, 1);
+        if (begin != process.env.PREFIX) {
+            return;
+        }
 
-        default:
-            message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
-            break;
+        var cmd = message.content.split(' ')[0].substring(1);
+        switch (cmd) {
+            case 'modset':
+                modset(message);
+                break;
+
+            case 'mm':
+                missionMaking(message);
+                break;
+
+            case 'serveur':
+                serveur(message);
+                break;
+
+            /*case 'changelog':
+                 message.delete({timeout: 0});
+                 changelog(message);
+                 break;*/
+
+            case 'mission':
+                message.delete({ timeout: 1 });
+                mission(message);
+                break;
+
+            case 'help':
+                message.delete({ timeout: 1 });
+                help(message);
+                break;
+
+            default:
+                message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
+                break;
+        }
     }
 });
 
-function help (message) {
+function help(message) {
 
-	var description = `Salut ${message.author.username}! Voici les infos sur les commandes disponibles :slight_smile:`
+    var description = `Salut ${message.author.username}! Voici les infos sur les commandes disponibles :slight_smile:`
 
     const embedReponse = {
         color: 0xEB4034,
@@ -126,7 +128,7 @@ function help (message) {
             icon_url: bot.user.avatarURL(),
         },
     };
-    
+
     message.channel.send({ embed: embedReponse });
 };
 
@@ -138,6 +140,13 @@ function mission(message) {
     if (content.length != 6) {
         message.author.send('Il manque des informations pour la mission, la commande est la suivante:\n`#mission nomDeLaMission, nombreDeJoueurs, typeDeMort, camo, stuffIntegre, lienGDoc`');
         return;
+    }
+
+    if (content[5].startsWith("<")) {
+        content[5] = content[5].substring(1);
+    }
+    if (content[5].endsWith(">")) {
+        content[5] = content[5].substring(0, (content[5].length - 1));
     }
 
     var elem = {
@@ -166,22 +175,22 @@ function mission(message) {
         fields: [
             {
                 name: 'Nom',
-                value: elem.nom ,
+                value: elem.nom,
                 inline: true
             },
             {
                 name: 'Nombre de joueurs',
-                value: elem.nbJoueurs ,
+                value: elem.nbJoueurs,
                 inline: true
             },
             {
                 name: 'Type de mort',
-                value: elem.typeMort ,
+                value: elem.typeMort,
                 inline: true
             },
             {
                 name: 'Camouflage',
-                value: elem.camo ,
+                value: elem.camo,
                 inline: true
             },
             {
@@ -191,7 +200,7 @@ function mission(message) {
             },
             {
                 name: 'GDoc',
-                value: "["+ elem.nom +"]("+ elem.doc +")",
+                value: "[" + elem.nom + "](" + elem.doc + ")",
                 inline: true
             },
             {
@@ -204,7 +213,7 @@ function mission(message) {
             text: 'GIE-Staff by Morbakos',
             icon_url: bot.user.avatarURL(),
         },
-    };    
+    };
     message.channel.send('@everyone');
     message.channel.send({ embed: embedReponse });
 }
@@ -251,10 +260,10 @@ function changelog(content) {
             icon_url: bot.user.avatarURL(),
         },
     };
-    
+
     content.channel.send("@everyone");
     content.channel.send({ embed: embedReponse });
-    
+
 }
 
 function missionMaking(content) {
@@ -290,9 +299,9 @@ function missionMaking(content) {
             icon_url: bot.user.avatarURL(),
         },
     };
-    
+
     content.channel.send({ embed: embedReponse });
-    
+
 }
 
 function serveur(content) {
@@ -347,9 +356,9 @@ function serveur(content) {
             icon_url: bot.user.avatarURL(),
         },
     };
-    
+
     content.channel.send({ embed: embedReponse });
-    
+
 }
 
 function modset(content) {
@@ -389,7 +398,7 @@ function modset(content) {
             icon_url: bot.user.avatarURL(),
         },
     };
-    
+
     content.channel.send({ embed: embedReponse });
-    
+
 }
