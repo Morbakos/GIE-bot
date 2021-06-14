@@ -16,12 +16,16 @@ bot.on('message', message => {
         return;
     }
 
-    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name === "Admin"))) {
+    if(message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !( message.member.roles.cache.some(role => role.name === "admin"))) {
         message.delete({ timeout:1 });
         message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
         console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
         return; 
     }
+	
+	// if((message.mentions.roles.some(role => role.name === "Admin") || message.mentions.roles.some(role => role.name === "GIE-Staff")) && message.author.username === "Ledoc"){
+	// 	message.channel.send(`Eh Ledoc, arrêtes un peu de me faire chier.`);
+	// }
 
     var begin = message.content.substring(0,1);
     if(begin != process.env.PREFIX){
@@ -116,6 +120,13 @@ function mission(message) {
     if (content.length != 6) {
         message.author.send('Il manque des informations pour la mission, la commande est la suivante:\n`#mission nomDeLaMission, nombreDeJoueurs, typeDeMort, camo, stuffIntegre, lienGDoc`');
         return;
+    }
+
+    if (content[5].startsWith("<")) {
+        content[5] = content[5].substring(1); 
+    }
+    if (content[5].endsWith(">")) {
+        content[5] = content[5].substring(0, (content[5].length -1)); 
     }
 
     var elem = {
