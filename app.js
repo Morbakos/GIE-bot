@@ -23,10 +23,6 @@ bot.on('message', message => {
         return; 
     }
 	
-	// if((message.mentions.roles.some(role => role.name === "Admin") || message.mentions.roles.some(role => role.name === "GIE-Staff")) && message.author.username === "Ledoc"){
-	// 	message.channel.send(`Eh Ledoc, arrêtes un peu de me faire chier.`);
-	// }
-
     var begin = message.content.substring(0,1);
     if(begin != process.env.PREFIX){
         return;
