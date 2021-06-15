@@ -20,7 +20,7 @@ bot.on('message', message => {
     }
 
     /** DEV */
-    if (message.channel.id == process.env.CHANNEL_TEST && message.author.username == "Morbakos") {
+    if (message.channel.id == process.env.CHANNEL_TEST && message.author.username == "Morbakos" && message.attachments.first()) {
 
         if (NOM_MISSION.exec(message.attachments.first().name)) {
             // console.log(message.attachments.first());
@@ -38,53 +38,60 @@ bot.on('message', message => {
         return;
     }
 
-    if (message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !(message.member.roles.cache.some(role => role.name.toLowerCase() === "admin"))) {
+    var begin = message.content.substring(0, 1);
+	if (begin != process.env.PREFIX) {
+		return;
+	}
+
+	if (message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !(message.member.roles.cache.some(role => role.name.toLowerCase() === "admin"))) {
         if (message.channel.id == "567050320753197094" && !(message.content.startsWith(process.env.PREFIX)) && !(message.member.roles.cache.some(role => role.name === "admin"))) {
             message.delete({ timeout: 1 });
             message.author.send(`Bonjour ${message.author.username}. J'ai supprimé ton message dans le canal mission afin d'éviter le flood dans ce channel. Je t'invites à reposter ton message dans le channel approprié.Ton message était:\n\`\`\`${message.content}\`\`\``);
             console.log(`[WARNING] Suppression du message de ${message.author.username} dans le channel ${message.channel.name}`);
             return;
-        }
-
-        var begin = message.content.substring(0, 1);
-        if (begin != process.env.PREFIX) {
-            return;
-        }
-
-        var cmd = message.content.split(' ')[0].substring(1);
-        switch (cmd) {
-            case 'modset':
-                modset(message);
-                break;
-
-            case 'mm':
-                missionMaking(message);
-                break;
-
-            case 'serveur':
-                serveur(message);
-                break;
-
-            /*case 'changelog':
-                 message.delete({timeout: 0});
-                 changelog(message);
-                 break;*/
-
-            case 'mission':
-                message.delete({ timeout: 1 });
-                mission(message);
-                break;
-
-            case 'help':
-                message.delete({ timeout: 1 });
-                help(message);
-                break;
-
-            default:
-                message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
-                break;
-        }
+        }        
     }
+
+	console.log("done");
+
+	var cmd = message.content.split(' ')[0].substring(1);
+	switch (cmd) {
+		case 'modset':
+			modset(message);
+			break;
+
+		case 'mm':
+			missionMaking(message);
+			break;
+
+		case 'serveur':
+			serveur(message);
+			break;
+
+		/*case 'changelog':
+				message.delete({timeout: 0});
+				changelog(message);
+				break;*/
+
+		case 'mission':
+			message.delete({ timeout: 1 });
+			mission(message);
+			break;
+
+		case 'help':
+			message.delete({ timeout: 1 });
+			help(message);
+			break;
+
+		case 'h&m':
+			message.delete({ timeout:1 });
+			hm(message);
+			break;
+
+		default:
+			message.channel.send('Aucune commande trouvée. Êtes-vous sûr de l\'avoir bien écrite ?');
+			break;
+	}
 });
 
 function help(message) {
@@ -401,4 +408,13 @@ function modset(content) {
 
     content.channel.send({ embed: embedReponse });
 
+}
+
+function hm(message) {
+    const member = bot.guilds.cache.get(message.guild.id).members.cache.find(u => u.id == message.author.id);
+    const role = message.guild.roles.cache.find(r => r.id == 847172972359581717);
+
+    member.roles.add(role)
+        .then(console.log(`Role H&M added to ${message.author.username}`))
+        .catch(console.error);
 }
